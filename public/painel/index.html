@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Painel Administrativo — Collection Store</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+  <div class="toast-stack" id="toast-stack" aria-live="polite"></div>
+
+  <header class="admin-header">
+    <div class="admin-container admin-header__inner">
+      <div class="admin-brand">
+        <span class="admin-brand__title">Collection <em>Store</em></span>
+        <span class="admin-brand__badge">Painel Restrito</span>
+      </div>
+
+      <div class="admin-header__actions">
+        <span class="env-pill" id="env-status-pill">Verificando conexão...</span>
+        <a href="../" target="_blank" rel="noopener noreferrer" class="btn btn-outline">Ver Loja</a>
+        <a href="?logout=1" class="btn btn-outline" id="btn-logout">Sair</a>
+        <button type="button" class="btn btn-publish" id="btn-open-publish">
+          <span>Publicar na Loja</span>
+          <span class="pending-badge" id="pending-count-badge">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="admin-container admin-main">
+    <!-- Resumo -->
+    <section class="stats-grid" aria-label="Resumo do catálogo">
+      <div class="stat-card">
+        <span class="stat-card__label">Total de Produtos</span>
+        <strong class="stat-card__value" id="stat-total">0</strong>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__label">Ativos na Vitrine</span>
+        <strong class="stat-card__value" id="stat-active">0</strong>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__label">Pausados / Ocultos</span>
+        <strong class="stat-card__value" id="stat-paused">0</strong>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__label">Fotos Novas para Enviar</span>
+        <strong class="stat-card__value" id="stat-images">0</strong>
+      </div>
+    </section>
+
+    <div class="workspace-grid">
+      <!-- Lista de Produtos -->
+      <section class="panel" aria-label="Lista de produtos">
+        <div class="panel__head">
+          <div>
+            <h2>Catálogo de Produtos</h2>
+            <p class="panel__sub">Selecione um produto para editar, pausar ou adicione um novo item.</p>
+          </div>
+          <button type="button" class="btn btn-gold" id="btn-new-product">+ Novo Produto</button>
+        </div>
+
+        <div class="filter-bar">
+          <input type="search" id="admin-search" placeholder="Buscar produto ou marca..." aria-label="Buscar produto" />
+          <select id="admin-filter-category" aria-label="Filtrar categoria">
+            <option value="all">Todas as categorias</option>
+          </select>
+        </div>
+
+        <div class="product-list" id="admin-product-list">
+          <!-- Renderizado via admin.js -->
+        </div>
+      </section>
+
+      <!-- Editor de Produto -->
+      <section class="panel editor-panel" aria-label="Editor de produto">
+        <div class="panel__head">
+          <div>
+            <h2 id="editor-heading">Novo Produto</h2>
+            <p class="panel__sub" id="editor-subheading">Preencha os detalhes abaixo e salve no rascunho antes de publicar.</p>
+          </div>
+          <button type="button" class="btn-text" id="btn-reset-editor">Limpar formulário</button>
+        </div>
+
+        <form id="product-editor-form" class="editor-form">
+          <input type="hidden" id="edit-mode-id" value="" />
+
+          <div class="form-row-2">
+            <div class="field">
+              <label for="prod-category">Departamento / Categoria *</label>
+              <select id="prod-category" required></select>
+            </div>
+
+            <div class="field">
+              <label for="prod-brand">Marca *</label>
+              <input type="text" id="prod-brand" placeholder="Ex: DeMillus, Collection Store..." required />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="prod-name">Nome do Produto *</label>
+            <input type="text" id="prod-name" placeholder="Ex: Conjunto Renda Majestic" required />
+          </div>
+
+          <div class="form-row-2">
+            <div class="field">
+              <label for="prod-tag">Selo / Destaque</label>
+              <input type="text" id="prod-tag" placeholder="Ex: Mais Vendido, 100% Original, Sigilo Total" />
+            </div>
+
+            <div class="field">
+              <label for="prod-variant-label">Título das Variações</label>
+              <input type="text" id="prod-variant-label" placeholder="Ex: Tamanho / Cor, Volumetria, Capacidade" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="prod-description">Descrição Curta</label>
+            <textarea id="prod-description" rows="2" placeholder="Descreva material, diferenciais, garantia ou observação..."></textarea>
+          </div>
+
+          <!-- Upload de Imagem ou Seleção da Galeria -->
+          <div class="field">
+            <label>Foto do Produto</label>
+            <div class="image-uploader-box">
+              <img src="../assets/images/collection-store.jpg" alt="Prévia do produto" id="prod-image-preview" class="image-preview" />
+              <div class="image-uploader-controls">
+                <label class="btn btn-outline btn-sm upload-label">
+                  <input type="file" id="prod-image-file" accept="image/*" hidden />
+                  <span>Enviar Nova Foto</span>
+                </label>
+                <select id="prod-image-preset" aria-label="Ou escolher imagem existente">
+                  <option value="">Ou escolher imagem padrão da categoria...</option>
+                </select>
+                <small id="prod-image-path-label" class="muted-path">assets/images/collection-store.jpg</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Variações e Preços -->
+          <div class="field">
+            <div class="variants-head">
+              <label>Opções e Preços (R$) *</label>
+              <button type="button" class="btn-text" id="btn-add-variant">+ Adicionar variação</button>
+            </div>
+            <div class="variants-list" id="variants-editor-list"></div>
+          </div>
+
+          <label class="toggle-row">
+            <input type="checkbox" id="prod-active" checked />
+            <span>Produto visível para os clientes na vitrine</span>
+          </label>
+
+          <div class="editor-actions">
+            <button type="submit" class="btn btn-gold btn-full" id="btn-save-draft">
+              Salvar Produto no Rascunho
+            </button>
+          </div>
+        </form>
+
+        <div class="local-tools">
+          <button type="button" class="btn-text" id="btn-export-json">Exportar backup do catálogo</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Modal de Publicação -->
+  <div class="modal-overlay" id="publish-modal" role="dialog" aria-modal="true" aria-labelledby="publish-modal-title">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="publish-modal-title">Publicar Alterações na Loja</h3>
+        <button type="button" class="btn-close" id="btn-close-publish" aria-label="Fechar">&times;</button>
+      </div>
+
+      <p class="modal-desc" id="publish-modal-desc">
+        Nesta versão de demonstração pública, ao confirmar será baixado o arquivo atualizado do catálogo em formato JSON (sem envio automático para repositório externo).
+      </p>
+
+      <div class="field" style="margin: 1rem 0;">
+        <label for="commit-message-input">Nota da atualização (opcional)</label>
+        <input type="text" id="commit-message-input" placeholder="Ex: Novos conjuntos DeMillus e iPhone 15" />
+      </div>
+
+      <div id="publish-result-box" class="publish-result" hidden></div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" id="btn-cancel-publish">Cancelar</button>
+        <button type="button" class="btn btn-publish" id="btn-confirm-publish">Confirmar e Publicar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/catalog.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
